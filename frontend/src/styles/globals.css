@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Subtle gold glow for headings */
+.royal-glow {
+  text-shadow: 0 0 18px rgba(212, 175, 55, 0.28);
+}
+
