@@ -45,7 +45,7 @@ export default function GalleryPage() {
           </div>
           <Link
             to="/admin/login"
-            className="inline-block rounded bg-royal-gold/20 px-6 py-2.5 text-sm font-semibold text-royal-gold transition-all hover:bg-royal-gold hover:text-royal-dark"
+            className="inline-block rounded bg-royal-gold/20 px-6 py-2.5 text-sm font-semibold text-royal-gold transition-all hover:bg-royal-gold hover:text-white"
           >
             Admin Login
           </Link>
