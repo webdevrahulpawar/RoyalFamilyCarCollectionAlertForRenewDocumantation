@@ -1,38 +1,34 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
 const { env } = require("../startup");
 
-let cachedTransporter = null;
+let resendClient = null;
 
-function getTransporter() {
-  if (cachedTransporter) return cachedTransporter;
-  cachedTransporter = nodemailer.createTransport({
-    host: env.EMAIL_HOST,
-    port: env.EMAIL_PORT,
-    secure: env.EMAIL_PORT === 465, // common SMTP choice
-    auth: {
-      user: env.EMAIL_USER,
-      pass: env.EMAIL_PASS,
-    },
-    tls: {
-      rejectUnauthorized: false, // Allow self-signed certificates (for development)
-    },
-  });
-  return cachedTransporter;
+function getResendClient() {
+  if (resendClient) return resendClient;
+  resendClient = new Resend(env.RESEND_API_KEY);
+  return resendClient;
 }
 
 async function sendExpiryEmail({ to, subject, html }) {
   if (!env.emailEnabled) throw new Error("Email channel is not configured");
-  const transporter = getTransporter();
+
   console.log('[sendExpiryEmail] sending to:', to);
+
   try {
-    const result = await transporter.sendMail({
+    const resend = getResendClient();
+    const result = await resend.emails.send({
       from: env.EMAIL_FROM,
       to,
       subject,
       html,
     });
-    console.log('[sendExpiryEmail] sent successfully');
+
+    if (result.error) {
+      throw new Error(result.error.message || JSON.stringify(result.error));
+    }
+
+    console.log('[sendExpiryEmail] sent successfully, id:', result.data?.id);
     return result;
   } catch (err) {
     console.error('[sendExpiryEmail] error:', err.message);
